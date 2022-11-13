@@ -124,4 +124,45 @@ RSpec.describe GildedRose do
       end
     end
   end
+
+  describe 'Common Item' do
+    describe 'before sell by date' do
+      describe 'quality is below 50' do
+        let(:item) { Item.new(name="+5 Dexterity Vest", sell_in=1, quality=20) }
+        it 'ages 1 day' do
+          GildedRose.new([item]).update_quality
+          expect(item.sell_in).to eq 0
+        end
+        it 'looses 1 quality' do
+          GildedRose.new([item]).update_quality
+          expect(item.quality).to eq 19
+        end
+      end
+      describe 'quality is at 50' do
+        let(:item) { Item.new(name="+5 Dexterity Vest", sell_in=10, quality=50) }
+        it 'ages 1 day' do
+          GildedRose.new([item]).update_quality
+          expect(item.sell_in).to eq 9
+        end
+        it 'does not gain anymore quality' do
+          GildedRose.new([item]).update_quality
+          expect(item.quality).to eq 49
+        end
+      end
+    end
+
+    describe 'on or after the sell by date' do
+      describe 'quality is bellow 50' do
+        let(:item) { Item.new(name="+5 Dexterity Vest", sell_in= 0, quality=20) }
+        it 'ages 1 day' do
+          GildedRose.new([item]).update_quality
+          expect(item.sell_in).to eq -1
+        end
+        it 'looses 2 quality' do
+          GildedRose.new([item]).update_quality
+          expect(item.quality).to eq 18
+        end
+      end
+    end
+  end
 end
