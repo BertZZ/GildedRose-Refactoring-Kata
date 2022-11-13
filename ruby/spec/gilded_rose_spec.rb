@@ -144,9 +144,20 @@ RSpec.describe GildedRose do
           GildedRose.new([item]).update_quality
           expect(item.sell_in).to eq 9
         end
-        it 'does not gain anymore quality' do
+        it 'looses 1 quality' do
           GildedRose.new([item]).update_quality
           expect(item.quality).to eq 49
+        end
+      end
+      describe 'quality is at 0' do
+        let(:item) { Item.new(name="+5 Dexterity Vest", sell_in=10, quality=0) }
+        it 'ages 1 day' do
+          GildedRose.new([item]).update_quality
+          expect(item.sell_in).to eq 9
+        end
+        it 'does not loose more quality' do
+          GildedRose.new([item]).update_quality
+          expect(item.quality).to eq 0
         end
       end
     end

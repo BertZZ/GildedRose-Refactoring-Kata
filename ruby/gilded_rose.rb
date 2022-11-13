@@ -8,33 +8,62 @@ class GildedRose
     item.quality += 1
   end
 
+  def decrease_quality_of(item)
+    item.quality -= 1
+  end
+
   def increase_age_of(item)
     item.sell_in -= 1
+  end
+
+  def past_sell_by_date?(item)
+    item.sell_in < 0
+  end
+
+  def at_max_quality?(item)
+    item.quality == 50
+  end
+
+  def at_min_quality?(item)
+    item.quality == 0
   end
 
   def update_aged_brie(item)
     increase_age_of(item)
 
-    return if item.quality == 50
+    return if at_max_quality?(item)
     increase_quality_of(item)
-    increase_quality_of(item) if item.sell_in < 0 && item.quality < 50
+    increase_quality_of(item) if past_sell_by_date?(item) && !at_max_quality?(item)
   end
 
   def update_backstage_passes(item)
     increase_age_of(item)
-    return item.quality = 0 if item.sell_in < 0
+    return item.quality = 0 if past_sell_by_date?(item)
 
-    return if item.quality == 50
+    return if at_max_quality?(item)
     increase_quality_of(item)
     increase_quality_of(item) if item.sell_in < 10
     increase_quality_of(item) if item.sell_in < 5
   end
 
+  def update_common(item)
+    increase_age_of(item)
+    return if at_min_quality?(item)
+    decrease_quality_of(item)
+    decrease_quality_of(item) if past_sell_by_date?(item) && !at_min_quality?(item)
+  end
+
   def update_quality()
     @items.each do |item|
       next if item.name == "Sulfuras, Hand of Ragnaros"
-      next update_backstage_passes(item) if item.name == "Backstage passes to a TAFKAL80ETC concert"
-      next update_aged_brie(item) if item.name == "Aged Brie"
+      case item.name
+      when "Backstage passes to a TAFKAL80ETC concert"
+        update_backstage_passes(item)
+      when "Aged Brie"
+        update_aged_brie(item)
+      else
+        update_common(item)
+      end
     end
   end
 end
