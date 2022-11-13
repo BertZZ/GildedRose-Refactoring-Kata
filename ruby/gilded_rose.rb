@@ -46,6 +46,13 @@ class GildedRose
     increase_quality_of(item) if item.sell_in < 5
   end
 
+  def update_conjured_item(item)
+    increase_age_of(item)
+    return if at_min_quality?(item)
+    2.times { decrease_quality_of(item) if !at_min_quality?(item)}
+    2.times { decrease_quality_of(item) if past_sell_by_date?(item) && !at_min_quality?(item) }
+  end
+
   def update_common(item)
     increase_age_of(item)
     return if at_min_quality?(item)
@@ -61,6 +68,8 @@ class GildedRose
         update_backstage_passes(item)
       when "Aged Brie"
         update_aged_brie(item)
+      when "Conjured Mana Cake"
+        update_conjured_item(item)
       else
         update_common(item)
       end

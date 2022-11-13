@@ -175,5 +175,56 @@ RSpec.describe GildedRose do
         end
       end
     end
+
+    describe 'Enchanted Item' do
+      describe 'before sell by date' do
+        describe 'quality is below 50' do
+          let(:item) { Item.new(name="Conjured Mana Cake", sell_in=3, quality=6) }
+          it 'ages 1 day' do
+            GildedRose.new([item]).update_quality
+            expect(item.sell_in).to eq 2
+          end
+          it 'looses 2 quality' do
+            GildedRose.new([item]).update_quality
+            expect(item.quality).to eq 4
+          end
+        end
+        describe 'quality is at 0' do
+          let(:item) { Item.new(name="Conjured Mana Cake", sell_in=10, quality=0) }
+          it 'ages 1 day' do
+            GildedRose.new([item]).update_quality
+            expect(item.sell_in).to eq 9
+          end
+          it 'does not loose more quality' do
+            GildedRose.new([item]).update_quality
+            expect(item.quality).to eq 0
+          end
+        end
+      end
+      describe 'on or after the sell by date' do
+        describe 'quality is bellow 50' do
+          let(:item) { Item.new(name="Conjured Mana Cake", sell_in= 0, quality=20) }
+          it 'ages 1 day' do
+            GildedRose.new([item]).update_quality
+            expect(item.sell_in).to eq -1
+          end
+          it 'looses 4 quality' do
+            GildedRose.new([item]).update_quality
+            expect(item.quality).to eq 16
+          end
+        end
+        describe 'quality is at 1' do
+          let(:item) { Item.new(name="Conjured Mana Cake", sell_in= 0, quality=1) }
+          it 'ages 1 day' do
+            GildedRose.new([item]).update_quality
+            expect(item.sell_in).to eq -1
+          end
+          it 'does not drop past 0 quality' do
+            GildedRose.new([item]).update_quality
+            expect(item.quality).to eq 0
+          end
+        end
+      end
+    end
   end
 end
