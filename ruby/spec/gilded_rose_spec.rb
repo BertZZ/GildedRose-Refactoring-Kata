@@ -176,7 +176,7 @@ RSpec.describe GildedRose do
       end
     end
 
-    describe 'Enchanted Item' do
+    describe 'Conjured Item' do
       describe 'before sell by date' do
         describe 'quality is below 50' do
           let(:item) { Item.new(name="Conjured Mana Cake", sell_in=3, quality=6) }
